@@ -42,12 +42,15 @@ jobs:
           }
           EOF
           npm init -y > /dev/null
-          npm install @capacitor/core@8 @capacitor/cli@8 @capacitor/ios@8
+          npm install @capacitor/core@8 @capacitor/cli@8 @capacitor/ios@8 @capacitor/filesystem@8 @capacitor/haptics@8
           npx cap add ios
 
-      - name: Musica in background, tema scuro, solo verticale
+      - name: Musica in background, cartella Musica, tema scuro, solo verticale
         run: |
           PLIST=ios/App/App/Info.plist
+          # cartella "Musica" visibile nell'app File e in iTunes (Condivisione file)
+          /usr/libexec/PlistBuddy -c "Add :UIFileSharingEnabled bool true" $PLIST
+          /usr/libexec/PlistBuddy -c "Add :LSSupportsOpeningDocumentsInPlace bool true" $PLIST
           /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" $PLIST
           /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string audio" $PLIST
           /usr/libexec/PlistBuddy -c "Add :UIUserInterfaceStyle string Dark" $PLIST
@@ -73,7 +76,7 @@ jobs:
           cd ios/App
           xcodebuild -project App.xcodeproj -scheme App -configuration Release \
             -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
-            MARKETING_VERSION=2.0 CURRENT_PROJECT_VERSION=${{ github.run_number }} \
+            MARKETING_VERSION=3.0 CURRENT_PROJECT_VERSION=${{ github.run_number }} \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
             build
           mkdir Payload
